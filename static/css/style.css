@@ -1,0 +1,550 @@
+/* --- Theme variables and base --- */
+:root {
+  --bg: #0f1115;
+  --card-bg: rgba(255,255,255,0.06);
+  --card-border: rgba(255,255,255,0.12);
+  --text: #e6e6e6;
+  --muted: #a6a6a6;
+  --accent: #4ea1ff;
+  --shadow: 0 8px 30px rgba(0,0,0,0.35);
+}
+
+html[data-bs-theme="light"] {
+  --bg: #f6f7fb;
+  --card-bg: rgba(255,255,255,0.8);
+  --card-border: rgba(0,0,0,0.06);
+  --text: #222;
+  --muted: #555;
+  --accent: #0d6efd;
+  --shadow: 0 10px 28px rgba(0,0,0,0.1);
+}
+
+body {
+  background: radial-gradient(1200px 800px at 70% -10%, rgba(78,161,255,0.12), transparent 40%),
+              radial-gradient(800px 600px at -10% 0%, rgba(255,99,132,0.12), transparent 50%),
+              var(--bg);
+  color: var(--text);
+}
+
+/* Glassmorphism cards */
+.bg-custom {
+  background: var(--card-bg) !important;
+  backdrop-filter: saturate(140%) blur(14px);
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow);
+}
+
+.info-box {
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.info-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+}
+
+/* Dropzone */
+.upload-box {
+  border: 2px dashed var(--accent);
+  border-radius: 16px;
+  background: rgba(78,161,255,0.06);
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+.upload-box.dragover {
+  background: rgba(78,161,255,0.15);
+  border-color: #8bc2ff;
+}
+
+/* Skeleton loaders */
+.skeleton {
+  display: inline-block;
+  background: linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.18), rgba(255,255,255,0.08));
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+  border-radius: 8px;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Sticky action bar */
+.sticky-actions {
+  position: sticky;
+  top: 0.75rem;
+  z-index: 1010;
+}
+
+/* Micro-interactions */
+.btn {
+  transition: transform .06s ease, box-shadow .2s ease;
+}
+.btn:active { transform: translateY(1px); }
+
+/* Video container tweaks */
+.video-container video { border-radius: 12px; }
+
+/* Tabs for metrics */
+.metrics-tabs .nav-link { color: var(--muted); }
+.metrics-tabs .nav-link.active { color: var(--text); border-bottom: 2px solid var(--accent); }
+
+/* Card styling */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.card-header {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Main page styling */
+.upload-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.feature-card {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.feature-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.feature-list li {
+    margin-bottom: 0.5rem;
+}
+
+/* Progress bars and metrics */
+.progress {
+    height: 8px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.metric-card {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.metric-card h2 {
+    margin-bottom: 0;
+    font-size: 2rem;
+}
+
+/* Result page styling */
+.traffic-feed {
+    position: relative;
+}
+
+.traffic-feed video,
+.traffic-feed img {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.video-controls {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.traffic-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Navigation styling */
+.navbar {
+    background-color: var(--secondary-bg);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.navbar-brand img {
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.5));
+}
+
+/* How it works section */
+.steps-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.step-box {
+    text-align: center;
+    padding: 1rem;
+}
+
+.step-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: rgba(58, 128, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.step-icon i {
+    font-size: 2rem;
+    color: var(--accent-color);
+}
+
+/* Form styling */
+.form-control {
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+}
+
+.form-control:focus {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-color: var(--accent-color);
+    color: var(--text-color);
+    box-shadow: 0 0 0 0.25rem rgba(58, 128, 255, 0.25);
+}
+
+/* Custom buttons */
+.btn-primary {
+    background-color: var(--accent-color);
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #2970e6;
+}
+
+/* Vehicle distribution chart */
+.chart-container {
+    height: 200px;
+}
+
+/* Traffic recommendations */
+.recommendation-card {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.recommendation-light {
+    background-color: rgba(32, 201, 151, 0.1);
+    border: 1px solid rgba(32, 201, 151, 0.3);
+}
+
+.recommendation-moderate {
+    background-color: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.recommendation-heavy {
+    background-color: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+/* Quick actions section */
+.quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Traffic Flow Visual */
+.traffic-flow-visual {
+    width: 100%;
+    padding: 15px 0;
+}
+
+.hour-block {
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding-top: 40px;
+}
+
+.density-bar {
+    width: 80%;
+    max-width: 20px;
+    background-color: #0d6efd;
+    border-radius: 2px;
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.hour-label {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    right: 0;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.density-legend {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.density-legend .badge {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    border-radius: 50%;
+}
+
+/* Vehicle Distribution */
+.vehicle-count-card {
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.vehicle-count-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.count-value {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+}
+
+.count-label {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .steps-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .metric-card {
+        margin-bottom: 1rem;
+    }
+    
+    .hour-block {
+        height: 120px;
+    }
+    
+    .hour-label {
+        font-size: 0.6rem;
+    }
+    
+    .vehicle-count-card {
+        padding: 10px !important;
+    }
+    
+    .count-value {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .vehicle-counts .col-3 {
+        width: 50%;
+    }
+}
+
+/* Variable mappings and light-mode adjustments */
+:root { 
+  --secondary-bg: rgba(255,255,255,0.05);
+  --accent-color: var(--accent);
+  --text-color: var(--text);
+}
+html[data-bs-theme="light"] { 
+  --secondary-bg: rgba(0,0,0,0.05);
+}
+
+/* Accessibility focus rings */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.btn:focus-visible { box-shadow: 0 0 0 0.25rem rgba(78,161,255,0.35); }
+
+/* Mobile bottom command bar */
+.command-bar {
+  background: var(--card-bg);
+  border-top: 1px solid var(--card-border);
+  box-shadow: 0 -8px 24px rgba(0,0,0,0.2);
+}
+.command-bar .btn { border-radius: 999px; }
+
+/* Masonry grid for History */
+.masonry { column-count: 3; column-gap: 1rem; }
+@media (max-width: 992px) { .masonry { column-count: 2; } }
+@media (max-width: 576px) { .masonry { column-count: 1; } }
+.masonry .masonry-item { break-inside: avoid; margin-bottom: 1rem; }
+
+.filter-chips .btn { margin-right: .5rem; margin-bottom: .5rem; }
+.sort-select { min-width: 200px; }
+
+/* Theme presets (missing before) */
+html[data-theme="slate"] {
+  --bg: #0f1115;
+  --card-bg: rgba(255,255,255,0.06);
+  --card-border: rgba(255,255,255,0.12);
+  --text: #e6e6e6;
+  --muted: #a6a6a6;
+  --accent: #4ea1ff;
+}
+html[data-theme="neon"] {
+  --bg: #0b0b12;
+  --card-bg: rgba(255,255,255,0.06);
+  --card-border: rgba(255,255,255,0.12);
+  --text: #eafdf6;
+  --muted: #a7dccc;
+  --accent: #7cffc4;
+}
+html[data-theme="forest"] {
+  --bg: #0f1412;
+  --card-bg: rgba(255,255,255,0.06);
+  --card-border: rgba(255,255,255,0.12);
+  --text: #e9f7ef;
+  --muted: #a6cfb8;
+  --accent: #4ccf75;
+}
+html[data-theme="solarized"] {
+  --bg: #f6f1e4;
+  --card-bg: rgba(255,255,255,0.85);
+  --card-border: rgba(0,0,0,0.08);
+  --text: #073642;
+  --muted: #586e75;
+  --accent: #268bd2;
+}
+
+/* Neutral light preset */
+html[data-theme="light"] {
+  --bg: #f7f7f9;
+  --card-bg: rgba(255,255,255,0.95);
+  --card-border: rgba(0,0,0,0.08);
+  --text: #1b1f23;
+  --muted: #4a4a4a;
+  --accent: #0d6efd;
+}
+
+/* High contrast tweaks */
+html[data-contrast="high"] {
+  --card-border: #ffffff;
+}
+html[data-contrast="high"][data-bs-theme="light"] {
+  --card-border: #111111;
+  --text: #111111;
+}
+
+/* Light mode readability fixes */
+html[data-bs-theme="light"] body { color: var(--text); }
+html[data-bs-theme="light"] .navbar { background-color: rgba(255,255,255,0.9); }
+html[data-bs-theme="light"] .btn-outline-light { color: #111; border-color: #111; }
+html[data-bs-theme="light"] .dropdown-menu { background-color: #ffffff; color: #111; }
+html[data-bs-theme="light"] .dropdown-item { color: #111; }
+html[data-bs-theme="light"] .bg-custom { border-color: var(--card-border); }
+html[data-bs-theme="light"] .form-control { color: #111; background-color: rgba(0,0,0,0.04); }
+html[data-bs-theme="light"] .form-control::placeholder { color: #666; }
+
+/* Ensure nav links remain visible in both themes */
+.navbar .nav-link { color: var(--text) !important; }
+
+/* Badge legibility */
+.badge { border: 1px solid rgba(0,0,0,0.08); }
+
+/* Navbar tweaks: align nav links without button boxes */
+.navbar .nav-link { padding: .5rem .75rem; border-radius: .5rem; }
+.navbar .nav-link:hover { background: rgba(255,255,255,0.06); }
+html[data-bs-theme="light"] .navbar .nav-link:hover { background: rgba(0,0,0,0.06); }
+
+/* Dropdown caret visibility */
+.navbar .dropdown-toggle::after { filter: invert(0); }
+html[data-bs-theme="light"] .navbar .dropdown-menu { border-color: rgba(0,0,0,0.1); }
+
+/* History masonry card uniformity */
+.masonry .bg-custom { display: block; }
+.masonry .img-fluid { width: 100%; height: auto; }
+.masonry .position-relative { width: 100%; }
+
+/* Navbar base styling for readability */
+.navbar {
+  background-color: var(--card-bg);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  border-bottom: 1px solid var(--card-border);
+}
+
+/* Force readable nav text/icons */
+.navbar .navbar-brand,
+.navbar .nav-link { color: var(--text) !important; }
+
+/* Hover states */
+.navbar .nav-link:hover { background: rgba(255,255,255,0.06); color: var(--text) !important; }
+html[data-bs-theme="light"] .navbar .nav-link:hover { background: rgba(0,0,0,0.06); }
+
+/* Light theme navbar overrides */
+html[data-bs-theme="light"] .navbar {
+  background-color: rgba(255,255,255,0.92);
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+html[data-bs-theme="light"] .navbar .navbar-brand,
+html[data-bs-theme="light"] .navbar .nav-link { color: #111 !important; }
+
+/* Dropdown menu in light theme */
+html[data-bs-theme="light"] .navbar .dropdown-menu { background: #fff; color: #111; border-color: rgba(0,0,0,0.1); }
+html[data-bs-theme="light"] .navbar .dropdown-item { color: #111; }
+
+/* History masonry spacing refinement */
+#historyGrid { margin-top: .25rem; }
+.masonry { column-gap: 1.25rem; }
+.masonry .masonry-item { display: inline-block; width: 100%; }
+
+/* Prevent header wash-out at very top on dark theme */
+html[data-bs-theme="dark"] body { background-attachment: fixed; }
+
+/* History controls */
+.controls-row { gap: .75rem; }
+.controls-row .btn-group .btn { min-width: 72px; }
+.controls-row .form-control, .controls-row .form-select { min-width: 220px; }
+
+/* Media thumbnails (16:9) */
+.media-thumb { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background: rgba(0,0,0,0.25); }
+.media-thumb img, .media-thumb video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.media-thumb .play-badge { position: absolute; inset: 0; display: grid; place-items: center; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,.5); }
+
+/* Larger filter chips for readability */
+.filter-chips .btn { padding: .25rem .6rem; }
+
+/* Light mode cards use subtle shadow for separation */
+html[data-bs-theme="light"] .bg-custom { box-shadow: 0 6px 22px rgba(0,0,0,0.08); }
+html[data-bs-theme="light"] .info-box { background: rgba(255,255,255,0.9); }
+
+/* Light theme contrast fixes */
+html[data-bs-theme="light"] body { color: var(--text); }
+html[data-bs-theme="light"] .feature-card { background-color: #ffffff; border: 1px solid rgba(0,0,0,0.08); color: #1b1f23; }
+html[data-bs-theme="light"] .card { background-color: var(--card-bg); border-color: var(--card-border); }
+html[data-bs-theme="light"] .card-header { background-color: rgba(0,0,0,0.04); border-bottom: 1px solid rgba(0,0,0,0.08); color: #1b1f23; }
+html[data-bs-theme="light"] .progress { background-color: rgba(0,0,0,0.08); }
+html[data-bs-theme="light"] .text-muted { color: #6b6f76 !important; }
+html[data-bs-theme="light"] .small, html[data-bs-theme="light"] small { color: #5a5f66; }

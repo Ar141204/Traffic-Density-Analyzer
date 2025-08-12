@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}Analysis History{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2 controls-row">
+        <h1 class="mb-0">Analysis History</h1>
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <div class="filter-chips btn-group" role="group" aria-label="Filter">
+                <button class="btn btn-sm btn-outline-light active" data-filter="all">All</button>
+                <button class="btn btn-sm btn-outline-light" data-filter="image">Images</button>
+                <button class="btn btn-sm btn-outline-light" data-filter="video">Videos</button>
+            </div>
+            <input id="historySearch" class="form-control form-control-sm" type="search" placeholder="Search filename..." aria-label="Search">
+            <select class="form-select form-select-sm sort-select" id="sortSelect" aria-label="Sort by">
+                <option value="date_desc" selected>Newest</option>
+                <option value="date_asc">Oldest</option>
+                <option value="density_desc">Highest Density</option>
+                <option value="density_asc">Lowest Density</option>
+            </select>
+            <a href="{{ url_for('index') }}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-2"></i>New Analysis
+            </a>
+            <button id="clearHistory" class="btn btn-outline-danger btn-sm" title="Remove all history"><i class="fas fa-trash"></i> Clear</button>
+        </div>
+    </div>
+    
+    {% if analyses %}
+        <div class="masonry" id="historyGrid">
+            {% for analysis in analyses %}
+            <a href="{{ url_for('view_analysis', analysis_id=analysis.id) }}" class="masonry-item text-decoration-none" data-type="{{ analysis.file_type }}" data-density="{{ '%.1f'|format(analysis.density_percentage) }}" data-date="{{ analysis.processed_at.timestamp() }}" data-name="{{ analysis.filename|lower }}">
+                <div class="bg-custom rounded-custom shadow-custom p-2 e2">
+                    <div class="position-relative media-thumb">
+                        {% if analysis.file_type == 'image' %}
+                            <img src="{{ url_for('static', filename='results/' + analysis.result_path) }}" class="img-fluid" alt="{{ analysis.filename }}" loading="lazy">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='img/traffic-analyzer-logo.svg') }}" class="img-fluid p-4 opacity-50" alt="video">
+                            <span class="play-badge"><i class="fas fa-play fa-lg"></i></span>
+                        {% endif %}
+                        <span class="badge position-absolute top-0 start-0 m-2 {{ 'bg-info' if analysis.file_type=='image' else 'bg-warning' }}">{{ analysis.file_type|capitalize }}</span>
+                        <span class="badge position-absolute top-0 end-0 m-2 {{ 'bg-success' if analysis.density_percentage < 30 else 'bg-warning' if analysis.density_percentage < 70 else 'bg-danger' }}">{{ '%.0f'|format(analysis.density_percentage) }}%</span>
+                    </div>
+                    <div class="p-2">
+                        <div class="text-truncate" title="{{ analysis.filename }}">{{ analysis.filename }}</div>
+                        <div class="small text-muted d-flex justify-content-between">
+                            <span><i class="fas fa-car-side me-1"></i>{{ analysis.vehicle_count }}</span>
+                            <span>{{ analysis.processed_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>No analysis history found. Upload a traffic video or image to get started.
+        </div>
+        <div class="text-center my-5">
+            <img src="{{ url_for('static', filename='img/traffic-analyzer-logo.svg') }}" alt="Traffic Analyzer Logo" height="100" class="mb-4 opacity-50">
+            <h4 class="mb-3">Start Your First Traffic Analysis</h4>
+            <p class="text-muted mb-4">Upload a traffic video or image for AI-powered analysis.</p>
+            <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-upload me-2"></i>Upload File
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chips = document.querySelectorAll('.filter-chips .btn');
+    const grid = document.getElementById('historyGrid');
+    const sortSelect = document.getElementById('sortSelect');
+    const search = document.getElementById('historySearch');
+    const clearBtn = document.getElementById('clearHistory');
+
+    function applyFilter(type) {
+        document.querySelectorAll('#historyGrid .masonry-item').forEach(item => {
+            const it = item.getAttribute('data-type');
+            const name = item.getAttribute('data-name') || '';
+            const q = (search.value || '').toLowerCase();
+            const typeOk = (type==='all' || it===type);
+            const searchOk = !q || name.includes(q);
+            item.style.display = (typeOk && searchOk) ? '' : 'none';
+        });
+    }
+
+    function applySort(mode) {
+        if (!grid) return;
+        const items = Array.from(grid.children);
+        items.sort((a,b) => {
+            const da = parseFloat(a.getAttribute('data-density'));
+            const db = parseFloat(b.getAttribute('data-density'));
+            const ta = parseFloat(a.getAttribute('data-date'));
+            const tb = parseFloat(b.getAttribute('data-date'));
+            switch(mode){
+                case 'date_asc': return ta - tb;
+                case 'date_desc': return tb - ta;
+                case 'density_asc': return da - db;
+                case 'density_desc': return db - da;
+                default: return 0;
+            }
+        });
+        items.forEach(it => grid.appendChild(it));
+    }
+
+    chips.forEach(btn => btn.addEventListener('click', () => {
+        chips.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyFilter(btn.getAttribute('data-filter'));
+    }));
+
+    sortSelect.addEventListener('change', () => applySort(sortSelect.value));
+    search.addEventListener('input', () => {
+        const active = document.querySelector('.filter-chips .btn.active');
+        applyFilter(active ? active.getAttribute('data-filter') : 'all');
+    });
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', async () => {
+            if (!confirm('Clear all history? This will delete all records and files.')) return;
+            try {
+                const res = await fetch('/history/clear', { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }});
+                const data = await res.json();
+                if (!res.ok || !data.ok) throw new Error(data.error || 'Failed');
+                location.reload();
+            } catch (e) {
+                alert('Failed to clear history');
+            }
+        });
+    }
+
+    applySort(sortSelect.value);
+});
+</script>
+{% endblock %}

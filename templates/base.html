@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Traffic Density Analyzer{% endblock %}</title>
+    
+    <!-- Bootstrap CSS (Replit theme) -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=2">
+    
+    {% block css %}{% endblock %}
+    {% block head %}{% endblock %}
+    
+    <style>
+        /* Utility Classes */
+        .rounded-custom { border-radius: 1rem; }
+        .shadow-custom { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        .bg-custom { background-color: rgba(255, 255, 255, 0.05); }
+        .transition-all { transition: all 0.3s ease; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <img src="{{ url_for('static', filename='img/traffic-analyzer-logo.svg') }}" alt="Traffic Analyzer Logo" height="40" class="me-2">
+                <span>Traffic Density Analyzer</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="fas fa-home me-1"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('history') }}"><i class="fas fa-history me-1"></i>History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="themeToggle" class="nav-link" role="button" title="Toggle theme"><i class="fas fa-moon"></i></a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Theme Preset</a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item theme-option" data-theme="slate" href="#">Slate</a></li>
+                            <li><a class="dropdown-item theme-option" data-theme="neon" href="#">Neon</a></li>
+                            <li><a class="dropdown-item theme-option" data-theme="forest" href="#">Forest</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Flash Messages -->
+        <div class="container mt-3 alert-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Toasts -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer" style="z-index: 1080;"></div>
+
+    <!-- Footer -->
+    <footer class="py-4 mt-5 text-center">
+        <div class="container">
+            <p class="mb-0">
+                <i class="fas fa-code me-1"></i> Traffic Density Analyzer | Powered by YOLOv8
+            </p>
+            <p class="text-muted small mb-0 mt-2">
+                For educational purposes only. Not for real traffic management.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js DataLabels -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}?v=2"></script>
+    
+    <!-- Additional scripts -->
+    {% block scripts %}{% endblock %}
+
+    <script>
+    // Theme persistence + presets + accent
+    (function() {
+        const htmlEl = document.documentElement;
+        // Auto theme: prefers-color-scheme + time of day
+        const hour = new Date().getHours();
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const defaultBsTheme = (hour >= 19 || hour < 7 || prefersDark) ? 'dark' : 'light';
+
+        const savedBs = localStorage.getItem('theme') || defaultBsTheme;
+        htmlEl.setAttribute('data-bs-theme', savedBs);
+
+        // Preset handling
+        const savedPreset = localStorage.getItem('theme-preset') || (savedBs === 'dark' ? (localStorage.getItem('dark-preset') || 'slate') : 'light');
+        htmlEl.setAttribute('data-theme', savedPreset);
+
+        // Apply accent color if stored
+        const storedAccent = localStorage.getItem('accentColor');
+        if (storedAccent) {
+            htmlEl.style.setProperty('--accent', storedAccent);
+        }
+
+        const themeBtn = document.getElementById('themeToggle');
+        if (themeBtn) {
+            themeBtn.addEventListener('click', () => {
+                const current = htmlEl.getAttribute('data-bs-theme') || 'dark';
+                const next = current === 'dark' ? 'light' : 'dark';
+                htmlEl.setAttribute('data-bs-theme', next);
+                localStorage.setItem('theme', next);
+                if (next === 'light') {
+                    // Force neutral light preset
+                    htmlEl.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme-preset', 'light');
+                } else {
+                    // Restore last dark preset or default to slate
+                    const darkPreset = localStorage.getItem('dark-preset') || 'slate';
+                    htmlEl.setAttribute('data-theme', darkPreset);
+                    localStorage.setItem('theme-preset', darkPreset);
+                }
+                themeBtn.innerHTML = next === 'dark' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+            });
+            themeBtn.innerHTML = savedBs === 'dark' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        }
+
+        // Preset switcher
+        document.querySelectorAll('.theme-option').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                const preset = el.getAttribute('data-theme');
+                const currentTheme = htmlEl.getAttribute('data-bs-theme') || 'dark';
+                if (currentTheme === 'dark') {
+                    htmlEl.setAttribute('data-theme', preset);
+                    localStorage.setItem('theme-preset', preset);
+                    localStorage.setItem('dark-preset', preset);
+                } else {
+                    // In light mode, keep neutral preset and only change accent
+                    const accentMap = { slate: '#0d6efd', neon: '#7cffc4', forest: '#4ccf75' };
+                    const acc = accentMap[preset] || '#0d6efd';
+                    htmlEl.style.setProperty('--accent', acc);
+                    localStorage.setItem('accentColor', acc);
+                    htmlEl.setAttribute('data-theme', 'light');
+                    localStorage.setItem('theme-preset', 'light');
+                }
+            });
+        });
+    })();
+    </script>
+</body>
+</html>

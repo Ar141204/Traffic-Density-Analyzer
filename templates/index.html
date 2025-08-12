@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+
+{% block title %}Traffic Density Analyzer{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <h1 class="display-5">Traffic Density Analyzer</h1>
+        <p class="lead text-muted">Upload an Image or Video for AI-Powered Traffic Analysis</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card mb-4">
+                <div class="card-body text-center p-5">
+                    <img src="{{ url_for('static', filename='img/traffic-analyzer-logo.svg') }}" alt="Traffic Analyzer Logo" height="80" class="mb-4">
+                    
+                    <p class="mb-4">Our advanced YOLOv8 model will analyze your traffic footage and provide detailed insights about vehicle count and traffic density.</p>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-card">
+                                <h5><i class="fas fa-image me-2 text-primary"></i>Image Analysis</h5>
+                                <p class="small">Upload a traffic image to get instant vehicle count and traffic density metrics.</p>
+                                <ul class="feature-list">
+                                    <li><i class="fas fa-check text-success me-2"></i>Supported formats: .jpg, .jpeg, .png</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Max file size: 200MB</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="feature-card">
+                                <h5><i class="fas fa-video me-2 text-primary"></i>Video Analysis</h5>
+                                <p class="small">Upload a traffic video to get the average traffic density over time.</p>
+                                <ul class="feature-list">
+                                    <li><i class="fas fa-check text-success me-2"></i>Supported formats: .mp4, .avi, .mov</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>Max file size: 200MB</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form action="{{ url_for('process_file') }}" method="post" enctype="multipart/form-data" id="upload-form" class="needs-validation" novalidate>
+                        <div class="upload-box p-4 mb-4 text-center" id="dropzone">
+                            <div id="preview" class="mb-3" style="display:none">
+                                <img id="previewImg" class="img-fluid rounded" style="max-height: 220px; display:none"/>
+                                <video id="previewVideo" class="w-100 rounded" style="max-height: 260px; display:none" controls></video>
+                            </div>
+                            <input type="file" name="file" id="file-input" class="form-control mb-3" accept=".jpg,.jpeg,.png,.mp4,.avi,.mov" required>
+                            <div class="invalid-feedback">
+                                Please select a file to upload.
+                            </div>
+                            <div class="progress mb-2 d-none" id="progressBar">
+                                <div class="progress-bar progress-bar-striped" role="progressbar" style="width: 0%" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <div id="progressText" class="small text-muted d-none">0%</div>
+                            <button type="submit" class="btn btn-primary btn-lg px-5" id="upload-btn">
+                                <i class="fas fa-upload me-2"></i>Choose File
+                            </button>
+                            <div class="form-text mt-2" id="inlineError" style="display:none; color:#ff6b6b"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0"><i class="fas fa-info-circle me-2"></i>How It Works</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="steps-container">
+                        <div class="step-box">
+                            <div class="step-icon">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <h5>Upload</h5>
+                            <p class="small text-muted">Upload your traffic footage.</p>
+                        </div>
+                        <div class="step-box">
+                            <div class="step-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h5>Process</h5>
+                            <p class="small text-muted">Our AI model analyzes the traffic patterns.</p>
+                        </div>
+                        <div class="step-box">
+                            <div class="step-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h5>Results</h5>
+                            <p class="small text-muted">Get detailed traffic insights.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('upload-form');
+    const uploadBtn = document.getElementById('upload-btn');
+    const progressWrap = document.getElementById('progressBar');
+    const progressBar = progressWrap ? progressWrap.querySelector('.progress-bar') : null;
+    const progressText = document.getElementById('progressText');
+    const fileInput = document.getElementById('file-input');
+    const dropzone = document.getElementById('dropzone');
+    const preview = document.getElementById('preview');
+    const previewImg = document.getElementById('previewImg');
+    const previewVideo = document.getElementById('previewVideo');
+    const inlineError = document.getElementById('inlineError');
+    
+    function showToast(message, type='info') {
+        const container = document.getElementById('toastContainer');
+        if (!container) return alert(message);
+        const el = document.createElement('div');
+        el.className = `toast align-items-center text-bg-${type} border-0`;
+        el.setAttribute('role', 'alert');
+        el.setAttribute('aria-live', 'assertive');
+        el.setAttribute('aria-atomic', 'true');
+        el.innerHTML = `<div class="d-flex"><div class="toast-body">${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div>`;
+        container.appendChild(el);
+        const toast = new bootstrap.Toast(el, { delay: 3500 });
+        toast.show();
+    }
+
+    function setInlineError(msg) {
+        if (!inlineError) return;
+        inlineError.style.display = msg ? 'block' : 'none';
+        inlineError.textContent = msg || '';
+    }
+
+    function previewFile(file) {
+        if (!file) return;
+        preview.style.display = 'block';
+        previewImg.style.display = 'none';
+        previewVideo.style.display = 'none';
+        const url = URL.createObjectURL(file);
+        if (file.type.startsWith('image/')) {
+            previewImg.src = url;
+            previewImg.style.display = 'block';
+            previewImg.onload = () => extractAccentFromImage(previewImg);
+        } else if (file.type.startsWith('video/')) {
+            previewVideo.src = url;
+            previewVideo.style.display = 'block';
+        }
+    }
+
+    // Drag and drop
+    ['dragenter','dragover'].forEach(evt => dropzone.addEventListener(evt, (e) => {
+        e.preventDefault(); e.stopPropagation(); dropzone.classList.add('dragover');
+    }));
+    ;['dragleave','drop'].forEach(evt => dropzone.addEventListener(evt, (e) => {
+        e.preventDefault(); e.stopPropagation(); dropzone.classList.remove('dragover');
+    }));
+    dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        if (dt && dt.files && dt.files.length) {
+            fileInput.files = dt.files;
+            fileInput.dispatchEvent(new Event('change'));
+        }
+    });
+
+    // Form validation and submission
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        console.log('Form submission started');
+        
+        if (!form.checkValidity()) {
+            console.error('Form validation failed');
+            form.classList.add('was-validated');
+            return;
+        }
+        
+        if (!fileInput || !fileInput.files.length) {
+            console.error('No file selected');
+            showToast('Please select a file first', 'warning');
+            return;
+        }
+        
+        const file = fileInput.files[0];
+        console.log('Selected file:', file.name, 'Size:', file.size, 'Type:', file.type);
+        
+        const maxSize = 209715200; // 200MB
+        if (file.size > maxSize) {
+            console.error('File too large');
+            setInlineError('File size exceeds 200MB limit.');
+            showToast('File size exceeds 200MB limit.', 'danger');
+            return;
+        }
+        
+        // Show progress (real XHR progress)
+        progressWrap.classList.remove('d-none');
+        progressBar.style.width = '0%';
+        progressBar.classList.remove('progress-bar-animated');
+        progressText.classList.remove('d-none');
+        progressText.textContent = 'Uploading 0%';
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+        
+        try {
+            console.log('Creating FormData');
+            const formData = new FormData();
+            formData.append('file', file);
+            // Attach saved thresholds preset if available
+            try {
+                const preset = JSON.parse(localStorage.getItem('processingPreset') || '{}');
+                if (preset && typeof preset === 'object') {
+                    if (preset.conf_global) formData.append('conf_global', String(preset.conf_global));
+                    if (preset.motorcycle_conf) formData.append('motorcycle_conf', String(preset.motorcycle_conf));
+                    if (preset.iou_thresh) formData.append('iou_thresh', String(preset.iou_thresh));
+                }
+            } catch(_) {}
+            
+            // Use XHR to get upload progress
+            const responseText = await new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/process_file');
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const pct = Math.round((e.loaded / e.total) * 100);
+                        progressBar.style.width = pct + '%';
+                        progressBar.setAttribute('aria-valuenow', String(pct));
+                        progressText.textContent = `Uploading ${pct}%`;
+                        if (pct >= 100) {
+                            // Upload complete; keep full bar and indicate processing
+                            progressBar.classList.add('progress-bar-animated');
+                            progressText.textContent = 'Uploaded 100% – Processing…';
+                        }
+                    }
+                });
+                xhr.onreadystatechange = () => {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            resolve(xhr.responseText);
+                        } else {
+                            try {
+                                const err = JSON.parse(xhr.responseText);
+                                reject(new Error(err.error || 'Server error'));
+                            } catch(_) {
+                                reject(new Error('Server error'));
+                            }
+                        }
+                    }
+                };
+                xhr.onerror = () => reject(new Error('Network error'));
+                xhr.send(formData);
+            });
+            
+            const html = responseText;
+            console.log('Received HTML response');
+            // Replace the page content
+            document.open();
+            document.write(html);
+            document.close();
+            // Scroll to top
+            window.scrollTo(0, 0);
+        } catch (error) {
+            console.error('Error during upload:', error);
+            setInlineError(error.message || 'An error occurred while processing the file.');
+            showToast(error.message || 'An error occurred while processing the file.', 'danger');
+            
+            // Reset form state
+            uploadBtn.disabled = false;
+            uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Choose File';
+            progressWrap.classList.add('d-none');
+            progressText.classList.add('d-none');
+        }
+    });
+    
+    // File input change handler
+    fileInput.addEventListener('change', function() {
+        console.log('File input changed');
+        if (this.files.length > 0) {
+            const file = this.files[0];
+            console.log('New file selected:', file.name, 'Size:', file.size, 'Type:', file.type);
+            
+            const maxSize = 209715200; // 200MB
+            if (file.size > maxSize) {
+                console.error('File too large');
+                setInlineError('File size exceeds 200MB limit.');
+                showToast('File size exceeds 200MB limit.', 'danger');
+                this.value = '';
+                return;
+            }
+            
+            uploadBtn.innerHTML = `<i class=\"fas fa-upload me-2\"></i>Analyze ${file.name}`;
+            previewFile(file);
+            setInlineError('');
+        } else {
+            console.log('No file selected');
+            uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Choose File';
+            setInlineError('');
+            preview.style.display = 'none';
+        }
+        
+        // Reset progress
+        progressWrap.classList.add('d-none');
+        progressBar.style.width = '0%';
+        progressText.classList.add('d-none');
+    });
+});
+</script>
+{% endblock %}
