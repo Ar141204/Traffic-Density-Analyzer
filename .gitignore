@@ -1,0 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.env
+
+# Logs & databases
+logs/
+instance/*.db
+*.log
+
+# Local environment
+.env.local
+*.env
+
+# Model weights and caches
+*.pt
+runs/
+
+# Generated media (keep placeholders)
+static/uploads/*
+!static/uploads/.gitkeep
+static/results/*
+!static/results/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE/project files
+.vscode/
+.idea/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/ 

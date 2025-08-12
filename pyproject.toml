@@ -1,0 +1,20 @@
+[project]
+name = "traffic-sentinel"
+version = "1.0.0"
+description = "Traffic Analysis and Monitoring System"
+requires-python = ">=3.8"
+dependencies = [
+    "flask>=2.0.0",
+    "flask-sqlalchemy>=2.5.0",
+    "numpy>=1.21.0",
+    "opencv-python>=4.5.0",
+    "pillow>=8.0.0",
+    "psycopg2-binary>=2.9.0",
+    "sqlalchemy>=1.4.0",
+    "werkzeug>=2.0.0",
+    "python-dotenv>=0.19.0"
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
