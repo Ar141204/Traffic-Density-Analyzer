@@ -1,8 +1,89 @@
-# Traffic Density Analyzer
+<div align="center">
+  <h1>🚦 Traffic Density Analyzer</h1>
+  <p>AI-powered traffic analysis (images/videos) with YOLOv8, unique vehicle counting, density timeline, upload progress, and an upgraded, modern UI.</p>
+  
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3.10%2B-blue" alt="Python"></a>
+  <a href="https://flask.palletsprojects.com/"><img src="https://img.shields.io/badge/Flask-2.3.3-000000" alt="Flask"></a>
+  <a href="https://github.com/ultralytics/ultralytics"><img src="https://img.shields.io/badge/YOLOv8-ultralytics-orange" alt="YOLOv8"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green" alt="License"></a>
+  <a href="https://github.com/Ar141204/TrafficDensityAnalyzer"><img src="https://img.shields.io/badge/View%20on-GitHub-181717?logo=github" alt="Open in GitHub"></a>
+</div>
 
-AI-powered traffic analysis (images/videos) with YOLOv8, unique vehicle counting, density timeline, upload progress, and an upgraded, modern UI.
+---
 
-## Demo
+## ✨ Features
+
+- **Real Upload Progress**: Upload images/videos with real percentage feedback
+- **Smart Detection**: YOLOv8-based unique vehicle counting & per-class stats (car, truck, bus, motorcycle)
+- **Interactive Timeline**: Density over time chart synced to the video timeline (click chart to scrub)
+- **Badges**: "No Motorcycles" and "Low Confidence" indicators
+- **Threshold Presets**: Adjustable (confidence, IOU) with re-run UI, auto-applied to next upload
+- **Results Export**: CSV, JSON, and KPI overlay snapshot JPG
+- **History Page**: Search, filter, sort, and clear all analysis
+- **Modern UI**: Theme presets (Slate/Neon/Forest), light/dark toggle, accessible focus states
+
+## 🛠️ Tech Stack
+
+### Backend
+- **Framework**: Flask (Python)
+- **Object Detection**: YOLOv8 (Ultralytics)
+- **Video Processing**: OpenCV, FFmpeg
+- **Database**: SQLite (with SQLAlchemy)
+- **Environment**: python-dotenv
+
+### Frontend
+- **Templating**: Jinja2
+- **Charts**: Chart.js (with datalabels plugin)
+- **Styling**: Custom CSS (theme variables, glassmorphism)
+- **JS Logic**: XHR upload, drag-and-drop, timeline sync
+
+### Development Tools
+- **Package Manager**: pip
+- **Version Control**: Git
+- **Environment Management**: venv, .env files
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Python 3.10–3.12
+- FFmpeg (recommended for video support)
+- Git
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Ar141204/TrafficDensityAnalyzer.git
+   cd TrafficDensityAnalyzer
+   ```
+
+2. **Set up the environment**
+   ```bash
+   python -m venv venv
+   # Windows:
+   venv\Scripts\activate
+   # macOS/Linux:
+   # source venv/bin/activate
+
+   pip install -r requirements.txt
+   ```
+
+3. **Configure environment**
+   ```bash
+   cp .env.example .env
+   # ...edit .env as needed
+   ```
+
+4. **Run the app**
+   ```bash
+   python main.py
+   # or:
+   # set FLASK_APP=main.py && flask run
+   ```
+
+App will be available at `http://127.0.0.1:5000/`.
+
+## 🖼️ Demo
 
 Below are sample screenshots of the Traffic Density Analyzer in action:
 
@@ -16,118 +97,66 @@ Below are sample screenshots of the Traffic Density Analyzer in action:
   <img src="static/screenshots/history.png" alt="Analysis History" width="800"/>
 </p>
 
-## Features
+## 📝 Usage
 
-- Upload images/videos with real upload progress (percentage)
-- YOLOv8 detection with unique counting and per-class stats (car, truck, bus, motorcycle)
-- Density over time chart synced to the video timeline (click chart to scrub)
-- Badges: "No Motorcycles" and "Low Confidence"
-- Adjustable thresholds preset (confidence, IOU) with re-run UI (applied on next upload)
-- Results export: CSV and JSON; snapshot JPG with KPI overlay
-- History page: search, filter (images/videos), sort (date/density), clear all
-- Theme presets (Slate/Neon/Forest) + light/dark toggle, accessible focus states
-
-## Requirements
-
-- Python 3.10–3.12
-- FFmpeg (recommended, for best video compatibility)
-- Windows/Linux/macOS
-
-## Quick Start
-
-```bash
-# 1) Create venv and install dependencies
-python -m venv venv
-venv\Scripts\activate      # Windows
-# source venv/bin/activate  # Linux/Mac
-pip install -r requirements.txt
-
-# 2) Configure environment
-copy .env.example .env   # then edit values if needed
-
-# 3) Run the app
-python main.py
-# or
-# set FLASK_APP=main.py && flask run
-```
-
-App runs at `http://127.0.0.1:5000/`.
-
-## Configuration (.env)
-
-```
-FLASK_APP=main.py
-FLASK_ENV=development
-SECRET_KEY=change-this
-DATABASE_URL=sqlite:///traffic_density.db
-UPLOAD_FOLDER=static/uploads
-RESULT_FOLDER=static/results
-SAMPLE_DATA_FOLDER=static/sample_data
-```
-
-Notes:
-- Large generated media and model weights are git-ignored (`.gitignore`).
-- `yolov8n.pt` is not required in repo; Ultralytics auto-downloads models when needed. If you place one, it will be ignored.
-
-## Usage
-
-1) Open Home page → drag-and-drop or select file
-2) Watch the percentage upload bar; when it reaches 100% it switches to "Processing…"
-3) Results page shows:
+1. Open Home page → drag-and-drop or select file
+2. Watch the percentage upload bar; when it reaches 100% it switches to "Processing…"
+3. Results page shows:
    - KPIs (total, density, per-class counts)
-   - Density timeline synced to video (click the chart to scrub the video)
+   - Density timeline synced to video (click the chart to scrub)
    - Badges: "No Motorcycles" and/or "Low Confidence" when applicable
    - Quick actions: Download CSV, JSON, Snapshot JPG
-4) Optional: Open "Re-run" panel (top-right slider icon) to save a threshold preset. This preset is automatically applied to future uploads.
+4. Optional: Open "Re-run" panel (top-right slider icon) to save a threshold preset for future uploads.
 
 ### Threshold Preset
 - Sliders for global confidence, motorcycle confidence, and IOU
-- Saved to `localStorage`; automatically sent with the next upload
+- Saved to `localStorage`; auto-sent with next upload
 
-## API Endpoints
+## 🌐 API Endpoints
 
-- `POST /process_file` → process uploaded file (applies optional form fields: `conf_global`, `motorcycle_conf`, `iou_thresh`)
+- `POST /process_file` → process uploaded file (optional: `conf_global`, `motorcycle_conf`, `iou_thresh`)
 - `GET  /report/<filename>` → CSV download
 - `GET  /report/json/<analysis_id>` → JSON payload
 - `GET  /snapshot/<analysis_id>` → KPI snapshot JPG
 - `GET  /history` → history page
 - `POST /history/clear` → delete all history and associated files
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 .
-├─ main.py                 # Flask app, routes, logging, processing flow
+├─ main.py                 # Flask app, routes, processing flow
 ├─ app/
 │  ├─ __init__.py
-│  ├─ models.py           # SQLAlchemy model(s)
-│  └─ utils.py            # Video/image processing (YOLOv8)
-├─ templates/              # Jinja templates (index, result, history, base)
+│  ├─ models.py           # SQLAlchemy models
+│  └─ utils.py            # YOLOv8 video/image processing
+├─ templates/              # Jinja templates
 ├─ static/
-│  ├─ css/                 # Styles (theme variables, glassmorphism, etc.)
-│  ├─ js/                  # Frontend logic (upload progress, drag-n-drop)
-│  ├─ img/                 # Logos/icons
-│  ├─ uploads/             # Ignored; user uploads (kept empty via .gitkeep)
-│  └─ results/             # Ignored; processed media/exports (.gitkeep)
+│  ├─ css/                # Styles
+│  ├─ js/                 # Frontend logic
+│  ├─ img/                # Logos/icons
+│  ├─ screenshots/        # Demo screenshots
+│  ├─ uploads/            # Ignored; user uploads
+│  └─ results/            # Ignored; processed/exports
 ├─ instance/               # SQLite DB (ignored)
-├─ .env.example            # Sample environment
-├─ .gitignore              # Excludes venv, media, logs, weights, etc.
+├─ .env.example            # Sample env
+├─ .gitignore              # Excludes venv, media, logs, weights
 ├─ requirements.txt        # Python dependencies
-└─ pyproject.toml          # Project metadata
+└─ pyproject.toml          # Metadata
 ```
 
-## Development
+## 🛠️ Development
 
-- Frontend
+- **Frontend**
   - Real upload progress via XHR; drag-and-drop and inline validation
   - Density chart with Chart.js; datalabels plugin enabled
-  - Theme presets with accessible focus rings; light/dark toggle persisted
-- Backend
+  - Theme presets; accessible focus rings; light/dark toggle persisted
+- **Backend**
   - `app.utils.process_video(input, output, *, conf_global, motorcycle_conf, iou_thresh)` returns:
     - `total_vehicles`, `vehicle_counts{car,truck,bus,motorcycle}`
     - `density` (overall), `density_series` (timeline), `avg_confidence`, `low_confidence`
 
-## Roadmap (next)
+## 🛣️ Roadmap
 
 - Background jobs (RQ) + SSE progress
 - ByteTrack/DeepSORT tracking for more accurate unique counts
@@ -135,17 +164,34 @@ Notes:
 - Object storage (S3/minio) for media, signed URLs
 - Dockerfile & Compose + GitHub Actions CI
 
-## Troubleshooting
+## 🩺 Troubleshooting
 
 - Upload fails immediately → check file type/size and `.env` limits
 - Video doesn’t play → install FFmpeg and try a standard H.264/AAC MP4
-- White/light UI too bright → use theme toggle in navbar
+- UI too bright → use theme toggle in navbar
 - Reset stale caching → hard refresh (Ctrl+F5)
 
-## License
+## 🙏 Acknowledgments
 
-MIT
+- Detection: [YOLOv8 by Ultralytics](https://github.com/ultralytics/ultralytics)
+- Charts: [Chart.js](https://www.chartjs.org/)
+- Frontend inspiration: glassmorphism, neon UI themes
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-Created and copyright © by Ar141204
+<p align="center">
+  <b>Created and copyright © by Ar141204</b>
+</p>
