@@ -4,9 +4,17 @@ AI-powered traffic analysis (images/videos) with YOLOv8, unique vehicle counting
 
 ## Demo
 
-<video src="Traffic%20Density%20Analyzer.mp4" controls muted loop width="800" style="max-width:100%"></video>
+Below are sample screenshots of the Traffic Density Analyzer in action:
 
-If the embedded player doesn’t load, [download/view the demo video](Traffic%20Density%20Analyzer.mp4).
+<p align="center">
+  <img src="static/screenshots/home.png" alt="Traffic Density Analyzer Home" width="800"/>
+</p>
+<p align="center">
+  <img src="static/screenshots/Analysed%20Dashboard.png" alt="Traffic Analysis Dashboard" width="800"/>
+</p>
+<p align="center">
+  <img src="static/screenshots/history.png" alt="Analysis History" width="800"/>
+</p>
 
 ## Features
 
@@ -136,4 +144,8 @@ Notes:
 
 ## License
 
-MIT 
+MIT
+
+---
+
+Created and copyright © by Ar141204
